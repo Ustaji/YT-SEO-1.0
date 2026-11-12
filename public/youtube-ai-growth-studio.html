@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YouTube AI Growth Studio (Standalone Chrome Edition)</title>
+  <meta name="description" content="All-in-one AI platform for YouTube creators: channel audits, trending topics finder, viral title generator, thumbnail studio, SEO optimizer, competitor analyzer, and content planner." />
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              red: '#DC2626',
+              dark: '#0B0F19',
+              card: '#111827'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090d16;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1f293d;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #374151;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-red-600 selection:text-white antialiased">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 w-full border-b border-slate-800 bg-slate-950/90 backdrop-blur-md">
+    <div class="flex items-center justify-between gap-6 px-6 py-3.5 max-w-7xl mx-auto">
+      <!-- Brand -->
+      <button onclick="switchTab('overview')" class="flex items-center gap-2.5 text-left text-lg font-bold tracking-tight text-white whitespace-nowrap shrink-0 hover:opacity-90">
+        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-red-600 shadow-sm shadow-red-900/40">
+          <svg class="h-4.5 w-4.5 text-white fill-current" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+        </div>
+        <span class="font-extrabold tracking-tight">
+          YouTube <span class="text-red-500">AI Growth Studio</span>
+        </span>
+      </button>
+
+      <!-- Nav Links -->
+      <nav class="hidden xl:flex items-center gap-1 overflow-x-auto py-1">
+        <button onclick="switchTab('overview')" id="nav-overview" class="nav-btn px-3 py-1.5 text-xs font-semibold rounded-lg text-white bg-slate-800">Overview</button>
+        <button onclick="switchTab('audit')" id="nav-audit" class="nav-btn px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white">Channel Audit</button>
+        <button onclick="switchTab('trends')" id="nav-trends" class="nav-btn px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white">Daily Trends</button>
+        <button onclick="switchTab('titles')" id="nav-titles" class="nav-btn px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white">Title Generator</button>
+        <button onclick="switchTab('thumbnail')" id="nav-thumbnail" class="nav-btn px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white">Thumbnail Studio</button>
+        <button onclick="switchTab('seo')" id="nav-seo" class="nav-btn px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white">Video SEO</button>
+        <button onclick="switchTab('competitor')" id="nav-competitor" class="nav-btn px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white">Competitors</button>
+        <button onclick="switchTab('calendar')" id="nav-calendar" class="nav-btn px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white">Content Calendar</button>
+        <button onclick="switchTab('analytics')" id="nav-analytics" class="nav-btn px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white">Analytics</button>
+        <button onclick="switchTab('saved')" id="nav-saved" class="nav-btn px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-white">Saved Vault</button>
+      </nav>
+
+      <!-- Right Zone -->
+      <div class="flex items-center gap-3 shrink-0">
+        <span class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-bold rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          Standalone Chrome Ready
+        </span>
+        <button onclick="saveCurrentToDisk()" class="flex items-center gap-1.5 rounded-lg bg-red-600 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-red-500 transition-colors shadow-sm">
+          <span>Save Backup</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Scroll Row -->
+    <div class="flex xl:hidden overflow-x-auto border-t border-slate-900 px-4 py-2 gap-1.5 max-w-7xl mx-auto">
+      <button onclick="switchTab('overview')" class="px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-800 text-white whitespace-nowrap">Overview</button>
+      <button onclick="switchTab('audit')" class="px-2.5 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white whitespace-nowrap">Channel Audit</button>
+      <button onclick="switchTab('trends')" class="px-2.5 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white whitespace-nowrap">Daily Trends</button>
+      <button onclick="switchTab('titles')" class="px-2.5 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white whitespace-nowrap">Titles</button>
+      <button onclick="switchTab('thumbnail')" class="px-2.5 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white whitespace-nowrap">Thumbnails</button>
+      <button onclick="switchTab('seo')" class="px-2.5 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white whitespace-nowrap">SEO</button>
+      <button onclick="switchTab('competitor')" class="px-2.5 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white whitespace-nowrap">Competitors</button>
+      <button onclick="switchTab('calendar')" class="px-2.5 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white whitespace-nowrap">Calendar</button>
+      <button onclick="switchTab('analytics')" class="px-2.5 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white whitespace-nowrap">Analytics</button>
+      <button onclick="switchTab('saved')" class="px-2.5 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-white whitespace-nowrap">Vault</button>
+    </div>
+  </header>
+
+  <!-- Main Viewport Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+    <!-- TAB 1: OVERVIEW -->
+    <div id="tab-overview" class="tab-content space-y-8">
+      <div class="rounded-2xl border border-slate-800 bg-gradient-to-r from-slate-900 via-slate-900/90 to-red-950/30 p-6 md:p-8 relative overflow-hidden">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+          <div class="space-y-2 max-w-2xl">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-red-500/30 bg-red-500/10 text-xs font-bold text-red-400">
+              OFFLINE STANDALONE CHROME APP
+            </span>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
+              YouTube <span class="text-red-500">AI Growth Studio</span>
+            </h1>
+            <p className="text-sm text-slate-300 leading-relaxed">
+              Run complete YouTube audits, discover surging trend topics, generate 10 viral title variations, create 1280×720 thumbnails with canvas export, optimize full SEO descriptions, analyze competitors, and plan publishing calendars directly inside Google Chrome!
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <button onclick="switchTab('audit')" class="flex items-center gap-2 rounded-xl bg-red-600 px-5 py-3 text-xs font-bold text-white shadow-lg shadow-red-900/30 hover:bg-red-500">
+              Run Channel Audit
+            </button>
+            <button onclick="switchTab('thumbnail')" class="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-xs font-semibold text-slate-200 hover:text-white">
+              Open Thumbnail Studio
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick KPI Strip -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div onclick="switchTab('audit')" class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 hover:border-slate-700 cursor-pointer">
+          <span class="text-xs text-slate-400 block mb-1">Health Score</span>
+          <div class="flex items-baseline gap-1">
+            <span class="text-2xl font-black text-emerald-400 font-mono">78</span>
+            <span class="text-xs text-slate-400">/100</span>
+          </div>
+          <span class="text-[11px] text-slate-400 mt-1 block">Top 12% in niche</span>
+        </div>
+        <div onclick="switchTab('trends')" class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 hover:border-slate-700 cursor-pointer">
+          <span class="text-xs text-slate-400 block mb-1">Daily Trends</span>
+          <div class="flex items-baseline gap-1">
+            <span class="text-2xl font-black text-white font-mono">6</span>
+            <span class="text-xs text-emerald-400 font-bold">+180% surge</span>
+          </div>
+          <span class="text-[11px] text-slate-400 mt-1 block">Breakout opportunities</span>
+        </div>
+        <div onclick="switchTab('calendar')" class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 hover:border-slate-700 cursor-pointer">
+          <span class="text-xs text-slate-400 block mb-1">Content Pipeline</span>
+          <div class="flex items-baseline gap-1">
+            <span class="text-2xl font-black text-white font-mono">6</span>
+            <span class="text-xs text-slate-400">Videos Scheduled</span>
+          </div>
+          <span class="text-[11px] text-slate-400 mt-1 block">Next: Tuesday</span>
+        </div>
+        <div onclick="switchTab('saved')" class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 hover:border-slate-700 cursor-pointer">
+          <span class="text-xs text-slate-400 block mb-1">Saved Vault</span>
+          <div class="flex items-baseline gap-1">
+            <span id="overview-vault-count" class="text-2xl font-black text-white font-mono">4</span>
+            <span class="text-xs text-slate-400">Items Stored</span>
+          </div>
+          <span class="text-[11px] text-slate-400 mt-1 block">In Chrome localStorage</span>
+        </div>
+      </div>
+
+      <!-- 8 Modules Grid -->
+      <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-6 space-y-4">
+        <h3 class="text-base font-bold text-white tracking-tight">Access All 8 Growth Modules</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div onclick="switchTab('audit')" class="rounded-xl border border-slate-800 bg-slate-950 p-4 hover:border-slate-700 cursor-pointer group">
+            <span class="text-[10px] font-bold text-emerald-400 uppercase font-mono">Module 1</span>
+            <h4 class="text-sm font-bold text-white group-hover:text-red-400 mt-1">Channel Audit</h4>
+            <p class="text-xs text-slate-400 mt-1">Full 6-category algorithm diagnostic and 30-day action plan.</p>
+          </div>
+          <div onclick="switchTab('trends')" class="rounded-xl border border-slate-800 bg-slate-950 p-4 hover:border-slate-700 cursor-pointer group">
+            <span class="text-[10px] font-bold text-red-400 uppercase font-mono">Module 2</span>
+            <h4 class="text-sm font-bold text-white group-hover:text-red-400 mt-1">Daily Trending Topics</h4>
+            <p class="text-xs text-slate-400 mt-1">Surging breakout queries with opportunity scores and publishing windows.</p>
+          </div>
+          <div onclick="switchTab('titles')" class="rounded-xl border border-slate-800 bg-slate-950 p-4 hover:border-slate-700 cursor-pointer group">
+            <span class="text-[10px] font-bold text-cyan-400 uppercase font-mono">Module 3</span>
+            <h4 class="text-sm font-bold text-white group-hover:text-red-400 mt-1">AI Title Generator</h4>
+            <p class="text-xs text-slate-400 mt-1">10 categorized viral titles with mobile safe length verification.</p>
+          </div>
+          <div onclick="switchTab('thumbnail')" class="rounded-xl border border-slate-800 bg-slate-950 p-4 hover:border-slate-700 cursor-pointer group">
+            <span class="text-[10px] font-bold text-amber-400 uppercase font-mono">Module 4</span>
+            <h4 class="text-sm font-bold text-white group-hover:text-red-400 mt-1">Thumbnail Studio</h4>
+            <p class="text-xs text-slate-400 mt-1">Interactive 1280×720 canvas editor with PNG/JPG download.</p>
+          </div>
+          <div onclick="switchTab('seo')" class="rounded-xl border border-slate-800 bg-slate-950 p-4 hover:border-slate-700 cursor-pointer group">
+            <span class="text-[10px] font-bold text-purple-400 uppercase font-mono">Module 5</span>
+            <h4 class="text-sm font-bold text-white group-hover:text-red-400 mt-1">Video SEO Optimizer</h4>
+            <p class="text-xs text-slate-400 mt-1">Structured descriptions, tags for Studio, and smart chapters.</p>
+          </div>
+          <div onclick="switchTab('competitor')" class="rounded-xl border border-slate-800 bg-slate-950 p-4 hover:border-slate-700 cursor-pointer group">
+            <span class="text-[10px] font-bold text-yellow-400 uppercase font-mono">Module 6</span>
+            <h4 class="text-sm font-bold text-white group-hover:text-red-400 mt-1">Competitor Analyzer</h4>
+            <p class="text-xs text-slate-400 mt-1">Uncover content gaps and steal competitor views with counter-titles.</p>
+          </div>
+          <div onclick="switchTab('calendar')" class="rounded-xl border border-slate-800 bg-slate-950 p-4 hover:border-slate-700 cursor-pointer group">
+            <span class="text-[10px] font-bold text-emerald-400 uppercase font-mono">Module 7</span>
+            <h4 class="text-sm font-bold text-white group-hover:text-red-400 mt-1">Content Calendar</h4>
+            <p class="text-xs text-slate-400 mt-1">7/15/30-day publishing roadmap with production status.</p>
+          </div>
+          <div onclick="switchTab('analytics')" class="rounded-xl border border-slate-800 bg-slate-950 p-4 hover:border-slate-700 cursor-pointer group">
+            <span class="text-[10px] font-bold text-red-400 uppercase font-mono">Module 8</span>
+            <h4 class="text-sm font-bold text-white group-hover:text-red-400 mt-1">Performance Analytics</h4>
+            <p class="text-xs text-slate-400 mt-1">CTR curves, retention velocity, and RPM models.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: CHANNEL AUDIT -->
+    <div id="tab-audit" class="tab-content hidden space-y-6">
+      <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-6">
+        <h2 class="text-2xl font-bold text-white">YouTube Channel Health Diagnostic</h2>
+        <p class="text-sm text-slate-400 mt-1">Audit any creator handle or paste a channel link.</p>
+
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+          <div class="md:col-span-6">
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Channel Handle</label>
+            <input type="text" id="audit-handle-input" value="@mycreatorchannel" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm text-white" />
+          </div>
+          <div class="md:col-span-4">
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Niche</label>
+            <select id="audit-niche-select" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white">
+              <option value="Tech & AI">Tech & AI</option>
+              <option value="Gaming">Gaming</option>
+              <option value="Finance">Finance & Investing</option>
+              <option value="Creator Economy">Creator Economy</option>
+              <option value="Education">Education & Science</option>
+            </select>
+          </div>
+          <div class="md:col-span-2">
+            <button onclick="runAudit()" class="w-full py-2 bg-red-600 hover:bg-red-500 rounded-lg text-sm font-bold text-white">Audit Channel</button>
+          </div>
+        </div>
+
+        <div class="mt-3 flex flex-wrap gap-2 text-xs text-slate-400">
+          <span>Test Channels:</span>
+          <button onclick="setAuditPreset('@mkbhd', 'Tech & AI')" class="text-slate-300 hover:text-white font-mono bg-slate-950 px-2 py-0.5 rounded border border-slate-800">@mkbhd</button>
+          <button onclick="setAuditPreset('@aliabdaal', 'Creator Economy')" class="text-slate-300 hover:text-white font-mono bg-slate-950 px-2 py-0.5 rounded border border-slate-800">@aliabdaal</button>
+          <button onclick="setAuditPreset('@veritasium', 'Education')" class="text-slate-300 hover:text-white font-mono bg-slate-950 px-2 py-0.5 rounded border border-slate-800">@veritasium</button>
+        </div>
+      </div>
+
+      <!-- Audit Results View -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-4 rounded-xl border border-slate-800 bg-slate-900/70 p-6 space-y-4">
+          <div class="flex justify-between items-center text-xs text-slate-400 font-bold uppercase">
+            <span>Overall Score</span>
+            <span class="text-emerald-400">Algorithmic Grade</span>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <span id="audit-score-num" class="text-6xl font-black text-emerald-400 font-mono">78</span>
+            <span class="text-xl text-slate-500 font-semibold">/ 100</span>
+          </div>
+          <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
+            <div id="audit-score-bar" class="bg-emerald-500 h-full rounded-full" style="width: 78%"></div>
+          </div>
+          <div class="space-y-1.5 text-xs text-slate-300 pt-2 border-t border-slate-800">
+            <div class="flex justify-between"><span>Audited Handle</span><span id="audit-handle-display" class="font-mono text-white">@mycreatorchannel</span></div>
+            <div class="flex justify-between"><span>Subscriber Tier</span><span class="text-slate-300">42.8K Subscribers</span></div>
+            <div class="flex justify-between"><span>Upload Cadence</span><span class="text-cyan-400">1-2 videos / week</span></div>
+            <div class="flex justify-between"><span>Estimated CTR</span><span class="text-emerald-400">6.4%</span></div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-8 rounded-xl border border-slate-800 bg-slate-900/70 p-6 space-y-4">
+          <h3 class="text-sm font-bold text-white">6-Category Performance Breakdown</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div class="space-y-1">
+              <div class="flex justify-between"><span>SEO & Search Optimization</span><span class="font-bold text-white">84/100</span></div>
+              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div class="bg-emerald-500 h-full w-[84%]"></div></div>
+            </div>
+            <div class="space-y-1">
+              <div class="flex justify-between"><span>Thumbnail Packaging Quality</span><span class="font-bold text-amber-400">68/100</span></div>
+              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div class="bg-amber-500 h-full w-[68%]"></div></div>
+            </div>
+            <div class="space-y-1">
+              <div class="flex justify-between"><span>Content Quality & Retention</span><span class="font-bold text-white">86/100</span></div>
+              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div class="bg-emerald-500 h-full w-[86%]"></div></div>
+            </div>
+            <div class="space-y-1">
+              <div class="flex justify-between"><span>Engagement & Comments</span><span class="font-bold text-white">74/100</span></div>
+              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div class="bg-emerald-500 h-full w-[74%]"></div></div>
+            </div>
+            <div class="space-y-1">
+              <div class="flex justify-between"><span>Upload Consistency</span><span class="font-bold text-amber-400">69/100</span></div>
+              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div class="bg-amber-500 h-full w-[69%]"></div></div>
+            </div>
+            <div class="space-y-1">
+              <div class="flex justify-between"><span>Channel Branding Cohesion</span><span class="font-bold text-white">82/100</span></div>
+              <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"><div class="bg-emerald-500 h-full w-[82%]"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: DAILY TRENDS -->
+    <div id="tab-trends" class="tab-content hidden space-y-6">
+      <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 class="text-2xl font-bold text-white">Daily Trending Topics Finder</h2>
+          <p class="text-sm text-slate-400">Real-time public search interest & AI content opportunity scores.</p>
+        </div>
+        <button onclick="refreshTrends()" class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-lg text-xs font-bold text-white">Scan Fresh Trends</button>
+      </div>
+
+      <div id="trends-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+    <!-- TAB 4: TITLE GENERATOR -->
+    <div id="tab-titles" class="tab-content hidden space-y-6">
+      <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-6 space-y-4">
+        <h2 class="text-2xl font-bold text-white">AI Video Title Generator & Comparison Engine</h2>
+        <p class="text-sm text-slate-400">Generate 10 categorized viral variations with mobile safety verification.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+          <div class="md:col-span-6">
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Video Topic</label>
+            <input type="text" id="title-topic-input" value="How I Built an Autonomous AI Agent Studio in 48 Hours" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm text-white" />
+          </div>
+          <div class="md:col-span-4">
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Target Keyword</label>
+            <input type="text" id="title-keyword-input" value="AI agents" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm text-white" />
+          </div>
+          <div class="md:col-span-2">
+            <button onclick="generateTitles()" class="w-full py-2 bg-red-600 hover:bg-red-500 rounded-lg text-sm font-bold text-white">Generate 10 Titles</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Titles list -->
+      <div id="titles-container" class="space-y-3">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+    <!-- TAB 5: THUMBNAIL STUDIO (CANVAS ENGINE) -->
+    <div id="tab-thumbnail" class="tab-content hidden space-y-6">
+      <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 class="text-2xl font-bold text-white">AI Thumbnail Studio & 1280×720 Canvas</h2>
+          <p class="text-sm text-slate-400">Live 16:9 canvas editor, background themes, and 1-click PNG/JPG download.</p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="downloadThumbnail('png')" class="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-lg text-xs font-bold text-white shadow-sm">Download PNG (1280×720)</button>
+          <button onclick="downloadThumbnail('jpeg')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-xs font-bold text-white">Download JPG</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <!-- Left Controls -->
+        <div class="lg:col-span-5 rounded-xl border border-slate-800 bg-slate-900/70 p-5 space-y-4">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Main Headline Overlay (Max 3-4 Words)</label>
+            <input type="text" id="thumb-headline-input" value="DO NOT DO THIS!" oninput="updateCanvas()" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm font-bold text-white uppercase" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Subtext Kicker</label>
+              <input type="text" id="thumb-subtext-input" value="2026 EDITION" oninput="updateCanvas()" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white uppercase" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Vertical Position</label>
+              <select id="thumb-pos-select" onchange="updateCanvas()" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white">
+                <option value="bottom">Bottom Third</option>
+                <option value="center">Center</option>
+                <option value="top">Top Third</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Font Size</label>
+            <input type="range" id="thumb-font-size" min="40" max="110" value="76" oninput="updateCanvas()" class="w-full accent-red-600" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Background Theme</label>
+              <select id="thumb-bg-select" onchange="updateCanvas()" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white">
+                <option value="neon">High-Energy Neon Cyan</option>
+                <option value="documentary">Cinematic Warm Mystery</option>
+                <option value="gaming">Cyberpunk Laser Violet</option>
+                <option value="tech">Modern Studio Wood Slat</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Badge Sticker</label>
+              <input type="text" id="thumb-badge-input" value="100% SHOCKING" oninput="updateCanvas()" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white uppercase" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Canvas Preview -->
+        <div class="lg:col-span-7 rounded-xl border border-slate-800 bg-slate-950 p-4 shadow-xl">
+          <div class="aspect-video w-full rounded-lg overflow-hidden border border-slate-800 bg-black flex items-center justify-center">
+            <canvas id="thumbnail-canvas" width="1280" height="720" class="w-full h-auto object-contain"></canvas>
+          </div>
+          <p class="text-xs text-slate-400 mt-2 text-center">Canvas automatically renders at standard 1280 × 720 pixels HD.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: VIDEO SEO OPTIMIZER -->
+    <div id="tab-seo" class="tab-content hidden space-y-6">
+      <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-6 space-y-4">
+        <h2 class="text-2xl font-bold text-white">YouTube Video SEO & Metadata Optimizer</h2>
+        <p class="text-sm text-slate-400">Generate structured descriptions, comma-separated tags, chapters, and pinned comments.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+          <div class="md:col-span-8">
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Target Title / Topic</label>
+            <input type="text" id="seo-title-input" value="Autonomous AI Agents in 2026: The Complete Step-by-Step Guide" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm text-white" />
+          </div>
+          <div class="md:col-span-4">
+            <button onclick="generateSeoPackage()" class="w-full py-2 bg-red-600 hover:bg-red-500 rounded-lg text-sm font-bold text-white">Generate SEO Package</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-7 rounded-xl border border-slate-800 bg-slate-900/60 p-5 space-y-3">
+          <div class="flex justify-between items-center">
+            <h3 class="text-sm font-bold text-white">Structured Video Description (500+ Words)</h3>
+            <button onclick="copyElementText('seo-desc-display')" class="text-xs text-red-400 font-bold hover:underline">Copy Description</button>
+          </div>
+          <div id="seo-desc-display" class="bg-slate-950 p-4 rounded-lg border border-slate-800 text-xs font-mono text-slate-300 whitespace-pre-wrap leading-relaxed max-h-96 overflow-y-auto">
+          </div>
+        </div>
+
+        <div class="lg:col-span-5 space-y-4">
+          <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-5 space-y-2">
+            <div class="flex justify-between items-center">
+              <h4 class="text-xs font-bold text-white uppercase tracking-wider">Studio Tags Box</h4>
+              <button onclick="copyElementText('seo-tags-display')" class="text-xs text-red-400 font-bold hover:underline">Copy Tags</button>
+            </div>
+            <div id="seo-tags-display" class="bg-slate-950 p-3 rounded-lg border border-slate-800 text-xs font-mono text-slate-300">
+            </div>
+          </div>
+
+          <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-5 space-y-2">
+            <div class="flex justify-between items-center">
+              <h4 class="text-xs font-bold text-white uppercase tracking-wider">Pinned Comment</h4>
+              <button onclick="copyElementText('seo-pinned-display')" class="text-xs text-red-400 font-bold hover:underline">Copy Comment</button>
+            </div>
+            <div id="seo-pinned-display" class="bg-slate-950 p-3 rounded-lg border border-slate-800 text-xs italic text-slate-300">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 7: COMPETITORS -->
+    <div id="tab-competitor" class="tab-content hidden space-y-6">
+      <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-6">
+        <h2 class="text-2xl font-bold text-white">Competitor Intelligence & Uncovered Gaps</h2>
+        <p class="text-sm text-slate-400">Discover topics competitors missed that you can claim.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="competitor-gaps-grid">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+    <!-- TAB 8: CONTENT CALENDAR -->
+    <div id="tab-calendar" class="tab-content hidden space-y-6">
+      <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 class="text-2xl font-bold text-white">AI Content Calendar & Roadmap</h2>
+          <p class="text-sm text-slate-400">Strategic 15-day publishing pipeline balancing long-form and Shorts.</p>
+        </div>
+        <button onclick="exportCalendarJson()" class="px-4 py-2 bg-slate-800 border border-slate-700 hover:bg-slate-700 rounded-lg text-xs font-bold text-white">Export Calendar (JSON)</button>
+      </div>
+
+      <div id="calendar-timeline" class="space-y-3">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+    <!-- TAB 9: ANALYTICS -->
+    <div id="tab-analytics" class="tab-content hidden space-y-6">
+      <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-6">
+        <h2 class="text-2xl font-bold text-white">Authorized YouTube Analytics Engine</h2>
+        <p class="text-sm text-slate-400">Track 28-day impression trajectories, CTR milestones, and estimated revenue.</p>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="rounded-xl border border-slate-800 bg-slate-900/70 p-4">
+          <span class="text-xs text-slate-400 block mb-1">Total Views</span>
+          <span class="text-2xl font-black text-white font-mono">184,200</span>
+          <span class="text-[11px] text-emerald-400 block mt-1">+18.4% velocity</span>
+        </div>
+        <div class="rounded-xl border border-slate-800 bg-slate-900/70 p-4">
+          <span class="text-xs text-slate-400 block mb-1">Watch Hours</span>
+          <span class="text-2xl font-black text-white font-mono">14,800h</span>
+          <span class="text-[11px] text-emerald-400 block mt-1">+22.1% watch time</span>
+        </div>
+        <div class="rounded-xl border border-slate-800 bg-slate-900/70 p-4">
+          <span class="text-xs text-slate-400 block mb-1">Click-Through Rate</span>
+          <span class="text-2xl font-black text-emerald-400 font-mono">7.4%</span>
+          <span class="text-[11px] text-slate-400 block mt-1">Above niche average</span>
+        </div>
+        <div class="rounded-xl border border-slate-800 bg-slate-900/70 p-4">
+          <span class="text-xs text-slate-400 block mb-1">Est. Ad Revenue</span>
+          <span class="text-2xl font-black text-white font-mono">$3,420</span>
+          <span class="text-[11px] text-slate-400 block mt-1">RPM: $8.40</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 10: SAVED VAULT -->
+    <div id="tab-saved" class="tab-content hidden space-y-6">
+      <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-6 flex justify-between items-center">
+        <div>
+          <h2 class="text-2xl font-bold text-white">Saved Projects & Artifacts Vault</h2>
+          <p class="text-sm text-slate-400">All saved titles, thumbnails, and SEO packages stored locally in your browser.</p>
+        </div>
+        <button onclick="clearSavedVault()" class="px-3.5 py-2 bg-rose-950/40 border border-rose-900 text-rose-300 hover:bg-rose-900/40 rounded-lg text-xs font-bold">Clear Vault</button>
+      </div>
+
+      <div id="saved-vault-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-900 bg-slate-950 px-6 py-6 text-center text-xs text-slate-500 mt-12">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>YouTube AI Growth Studio · Standalone Single-File Chrome Edition</div>
+      <div class="flex gap-4">
+        <button onclick="switchTab('audit')" class="hover:text-slate-300">Audit</button>
+        <button onclick="switchTab('trends')" class="hover:text-slate-300">Trends</button>
+        <button onclick="switchTab('titles')" class="hover:text-slate-300">Titles</button>
+        <button onclick="switchTab('thumbnail')" class="hover:text-slate-300">Thumbnail</button>
+        <button onclick="switchTab('seo')" class="hover:text-slate-300">SEO</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Complete Standalone JavaScript Engine -->
+  <script>
+    // Tab Switcher
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      const activeEl = document.getElementById('tab-' + tabId);
+      if (activeEl) activeEl.classList.remove('hidden');
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('bg-slate-800', 'text-white');
+        btn.classList.add('text-slate-400');
+      });
+      const activeBtn = document.getElementById('nav-' + tabId);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-slate-800', 'text-white');
+        activeBtn.classList.remove('text-slate-400');
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Copy Helper
+    function copyElementText(elId) {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      navigator.clipboard.writeText(el.innerText || el.textContent);
+      alert('Copied to clipboard!');
+    }
+
+    // 1. Audit Engine
+    function setAuditPreset(handle, niche) {
+      document.getElementById('audit-handle-input').value = handle;
+      document.getElementById('audit-niche-select').value = niche;
+      runAudit();
+    }
+
+    function runAudit() {
+      const handle = document.getElementById('audit-handle-input').value || '@creator';
+      document.getElementById('audit-handle-display').innerText = handle;
+      let score = 78;
+      if (handle.includes('mkbhd')) score = 88;
+      if (handle.includes('aliabdaal')) score = 84;
+      if (handle.includes('veritasium')) score = 91;
+      
+      document.getElementById('audit-score-num').innerText = score;
+      document.getElementById('audit-score-bar').style.width = score + '%';
+    }
+
+    // 2. Daily Trends Data & Renderer
+    const sampleTrends = [
+      {
+        topic: 'Autonomous AI Agents & Coding Workflows in 2026',
+        category: 'Tech & Productivity',
+        why: 'Builders transitioning from prompt chat to autonomous developer loops.',
+        oppScore: 96,
+        angle: 'I built an entire SaaS in 48h with 4 AI agents (Testing the limits)',
+        window: 'Next 48 to 72 hours'
+      },
+      {
+        topic: 'The 2026 YouTube Algorithm Shift: Session Duration vs CTR',
+        category: 'Creator Economy',
+        why: 'YouTube recommendations now heavily weigh multi-video viewer sessions.',
+        oppScore: 94,
+        angle: 'Why High CTR Videos Are Dying on YouTube (The new metric)',
+        window: 'Thursday 4 PM'
+      },
+      {
+        topic: 'Minimalist Dumbphone Lifestyle & Digital Detox',
+        category: 'Lifestyle & Wellness',
+        why: 'Gen Z swapping smartphones for flip phones to reclaim mental focus.',
+        oppScore: 91,
+        angle: 'I Used a $50 Dumbphone for 30 Days (It changed everything)',
+        window: 'Sunday morning'
+      },
+      {
+        topic: 'Budget Cinema Cameras: $300 eBay Rig vs $10,000 RED',
+        category: 'Filmmaking & Gear',
+        why: 'Affordable vintage sensors delivering cinematic Hollywood visuals.',
+        oppScore: 89,
+        angle: 'Can You Spot The $300 Camera? (Blind Test)',
+        window: 'This weekend'
+      },
+      {
+        topic: 'Shorts-to-Longform Conversion Bridge Strategy',
+        category: 'YouTube Strategy',
+        why: 'Converting high viral Shorts volume into high-RPM long-form subscribers.',
+        oppScore: 95,
+        angle: 'How to Turn 1M Shorts Views into Loyal Long-Form Subscribers',
+        window: 'Immediate'
+      },
+      {
+        topic: 'Personal AI Knowledge Base: Local Second Brain',
+        category: 'Tools & AI',
+        why: 'Private local LLMs replacing legacy note-taking apps.',
+        oppScore: 88,
+        angle: 'How to Build an AI That Reads Your Entire Brain (Free & Local)',
+        window: 'Next Tuesday'
+      }
+    ];
+
+    function renderTrends() {
+      const container = document.getElementById('trends-grid');
+      container.innerHTML = sampleTrends.map((t, i) => `
+        <div class="rounded-xl border border-slate-800 bg-slate-900/70 p-5 flex flex-col justify-between hover:border-slate-700">
+          <div>
+            <div class="flex justify-between items-center text-xs mb-2">
+              <span class="text-slate-400">${t.category}</span>
+              <span class="font-mono font-bold text-emerald-400">Score: ${t.oppScore}/100</span>
+            </div>
+            <h3 class="text-base font-bold text-white mb-2">${t.topic}</h3>
+            <p class="text-xs text-slate-300 leading-relaxed mb-3">${t.why}</p>
+            <div class="rounded bg-slate-950 p-2.5 border border-slate-800 text-xs italic text-slate-400">
+              Angle: "${t.angle}"
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between items-center">
+            <span class="text-[11px] text-slate-400">Publish: ${t.window}</span>
+            <button onclick="sendTrendToTitle('${t.topic.replace(/'/g, "\\'")}')" class="px-3 py-1.5 bg-red-600 hover:bg-red-500 rounded text-xs font-bold text-white">Generate Titles</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function refreshTrends() {
+      alert('Scanning fresh YouTube trending signals...');
+      renderTrends();
+    }
+
+    function sendTrendToTitle(topic) {
+      document.getElementById('title-topic-input').value = topic;
+      switchTab('titles');
+      generateTitles();
+    }
+
+    // 3. Titles Engine
+    function generateTitles() {
+      const topic = document.getElementById('title-topic-input').value || 'AI Automation';
+      const keyword = document.getElementById('title-keyword-input').value || 'AI';
+      
+      const generated = [
+        { title: `${keyword}: The Complete 2026 Step-by-Step Blueprint`, cat: 'SEO-Focused', score: 93, hook: 'Frontloads keyword with authority framing' },
+        { title: `How to Master ${keyword} in 30 Days (Full Guide)`, cat: 'SEO-Focused', score: 91, hook: 'Actionable timeframe search query' },
+        { title: `I Tested 50 ${keyword} Tactics. Only 3 Worked.`, cat: 'Curiosity-Gap', score: 98, hook: 'Extreme effort combined with selective revelation' },
+        { title: `The Truth About ${topic} Nobody Tells You`, cat: 'Curiosity-Gap', score: 95, hook: 'Classic open-loop curiosity trigger' },
+        { title: `Stop Wasting Time on ${topic} (Do This Instead)`, cat: 'Emotional', score: 94, hook: 'Loss aversion and immediate tactical relief' },
+        { title: `Why 99% of Creators Fail at ${keyword}`, cat: 'Emotional', score: 92, hook: 'Contrasts mass failure with proven solution' },
+        { title: `I Handed My Entire Channel to ${keyword} for 100 Hours`, cat: 'Viral-Style', score: 97, hook: 'High-stakes lifestyle challenge format' },
+        { title: `$100 vs $10,000 ${keyword} Workflow Test`, cat: 'Viral-Style', score: 96, hook: 'Extreme contrast with universal browse appeal' },
+        { title: `${topic} Is Broken. Here's Why.`, cat: 'Short & Punchy', score: 89, hook: 'Zero-clipping contrarian statement' },
+        { title: `The 1-Minute ${keyword} Fix`, cat: 'Short & Punchy', score: 88, hook: 'Micro-commitment promise for mobile feed' }
+      ];
+
+      const container = document.getElementById('titles-container');
+      container.innerHTML = generated.map((t, idx) => `
+        <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 hover:border-slate-700">
+          <div>
+            <div class="flex items-center gap-2 text-xs mb-1">
+              <span class="font-mono text-slate-500">#${idx+1}</span>
+              <span class="font-semibold text-slate-300">${t.cat}</span>
+              <span class="text-slate-600">·</span>
+              <span class="font-mono text-emerald-400">${t.title.length} chars (Mobile Safe)</span>
+              <span class="text-slate-600">·</span>
+              <span class="font-mono font-bold text-white">Score: ${t.score}/100</span>
+            </div>
+            <h4 class="text-base font-bold text-white leading-snug">${t.title}</h4>
+            <p class="text-xs text-slate-400 mt-1">Hook: ${t.hook}</p>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <button onclick="navigator.clipboard.writeText('${t.title.replace(/'/g, "\\'")}'); alert('Title copied!')" class="px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-xs font-semibold text-slate-200 hover:text-white">Copy</button>
+            <button onclick="sendTitleToThumbnail('${t.title.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-lg bg-red-600 text-xs font-bold text-white hover:bg-red-500">Create Thumbnail</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function sendTitleToThumbnail(title) {
+      document.getElementById('thumb-headline-input').value = title.slice(0, 30).toUpperCase();
+      switchTab('thumbnail');
+      updateCanvas();
+    }
+
+    // 4. Thumbnail Canvas Engine
+    function updateCanvas() {
+      const canvas = document.getElementById('thumbnail-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const headline = document.getElementById('thumb-headline-input').value || 'ENTER HEADLINE';
+      const subtext = document.getElementById('thumb-subtext-input').value || '';
+      const pos = document.getElementById('thumb-pos-select').value;
+      const fontSize = parseInt(document.getElementById('thumb-font-size').value, 10);
+      const bgTheme = document.getElementById('thumb-bg-select').value;
+      const badge = document.getElementById('thumb-badge-input').value || '';
+
+      // Draw Background Gradient
+      let grad = ctx.createLinearGradient(0, 0, 1280, 720);
+      if (bgTheme === 'neon') {
+        grad.addColorStop(0, '#020617');
+        grad.addColorStop(0.5, '#082f49');
+        grad.addColorStop(1, '#0c4a6e');
+      } else if (bgTheme === 'documentary') {
+        grad.addColorStop(0, '#0a0a0a');
+        grad.addColorStop(0.5, '#1c1917');
+        grad.addColorStop(1, '#292524');
+      } else if (bgTheme === 'gaming') {
+        grad.addColorStop(0, '#0f172a');
+        grad.addColorStop(0.5, '#3b0764');
+        grad.addColorStop(1, '#581c87');
+      } else {
+        grad.addColorStop(0, '#111827');
+        grad.addColorStop(1, '#1e293b');
+      }
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 1280, 720);
+
+      // Dark bottom vignette
+      let scrim = ctx.createLinearGradient(0, 720, 0, 200);
+      scrim.addColorStop(0, 'rgba(0,0,0,0.85)');
+      scrim.addColorStop(1, 'transparent');
+      ctx.fillStyle = scrim;
+      ctx.fillRect(0, 0, 1280, 720);
+
+      // Draw Badge Sticker
+      if (badge.trim()) {
+        ctx.save();
+        ctx.translate(50, 60);
+        ctx.rotate(-0.04);
+        ctx.fillStyle = '#DC2626';
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.roundRect(0, 0, 260, 54, 10);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '900 28px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText(badge.toUpperCase(), 20, 38);
+        ctx.restore();
+      }
+
+      // Draw Headline
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.font = `900 ${fontSize}px "Plus Jakarta Sans", Impact, sans-serif`;
+
+      let y = 620;
+      if (pos === 'top') y = 200;
+      if (pos === 'center') y = 380;
+
+      if (subtext.trim()) {
+        ctx.font = `800 ${Math.floor(fontSize * 0.42)}px "Plus Jakarta Sans", sans-serif`;
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 8;
+        ctx.strokeText(subtext.toUpperCase(), 640, y - fontSize * 0.95);
+        ctx.fillStyle = '#FBBF24';
+        ctx.fillText(subtext.toUpperCase(), 640, y - fontSize * 0.95);
+      }
+
+      ctx.font = `900 ${fontSize}px "Plus Jakarta Sans", Impact, sans-serif`;
+      ctx.shadowColor = 'rgba(0,0,0,0.95)';
+      ctx.shadowBlur = 24;
+      ctx.shadowOffsetX = 6;
+      ctx.shadowOffsetY = 8;
+
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 14;
+      ctx.lineJoin = 'round';
+      ctx.strokeText(headline.toUpperCase(), 640, y);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillText(headline.toUpperCase(), 640, y);
+      ctx.restore();
+    }
+
+    function downloadThumbnail(format) {
+      const canvas = document.getElementById('thumbnail-canvas');
+      const mime = format === 'png' ? 'image/png' : 'image/jpeg';
+      const url = canvas.toDataURL(mime, 0.95);
+      const a = document.createElement('a');
+      a.download = `youtube-thumbnail-${Date.now()}.${format}`;
+      a.href = url;
+      a.click();
+    }
+
+    // 5. Video SEO Engine
+    function generateSeoPackage() {
+      const title = document.getElementById('seo-title-input').value || 'Autonomous AI Agents in 2026';
+      
+      const desc = `In this complete breakdown, learn the exact step-by-step blueprint for ${title} and how to scale your audience with data-driven workflows.\n\n` +
+`TIMESTAMPS:\n00:00 - The Big Problem With Old Workflows\n01:25 - Core Framework & Mental Model\n03:45 - The 3 Fatal Pitfalls to Avoid\n06:20 - Real Channel Case Study & Exact Numbers\n09:10 - Advanced Action Plan\n11:45 - Final Takeaways & Next Steps\n\n` +
+`RESOURCES & TEMPLATES MENTIONED:\n- Free Creator Growth Kit: https://example.com/growth-kit\n- Follow on Twitter/X: https://x.com/creator\n\n` +
+`ABOUT THIS CHANNEL:\nWe help ambitious creators break through plateaus with actionable tutorials and algorithmic frameworks.\n\n` +
+`#YouTubeGrowth #CreatorEconomy #VideoSEO #TechTutorial`;
+
+      const tags = `autonomous AI agents, AI 2026, how to build AI agents, youtube growth, creator tips, youtube studio, video seo, viral video strategy, small channel growth`;
+      const pinned = `Question of the day: What is the single biggest bottleneck holding back your channel right now? Drop your niche below and I'll personally review the first 50 replies! 👇`;
+
+      document.getElementById('seo-desc-display').innerText = desc;
+      document.getElementById('seo-tags-display').innerText = tags;
+      document.getElementById('seo-pinned-display').innerText = pinned;
+    }
+
+    // 6. Competitor Gaps
+    const sampleGaps = [
+      {
+        topic: 'Budget & DIY Alternatives to Flagship Gear',
+        why: 'Competitor focuses strictly on luxury $2,000+ studio gadgets.',
+        title: 'The $120 Setup That Competes with Apple Studio Display'
+      },
+      {
+        topic: '6-Month Real World Long-Term Durability Test',
+        why: 'Competitor only reviews items for 1 week at initial launch.',
+        title: '180 Days Later: The Flaws Nobody Mentioned in the Reviews'
+      },
+      {
+        topic: 'Deep Step-by-Step Software & Terminal Setup',
+        why: 'Competitor produces broad high-level consumer entertainment.',
+        title: 'How to ACTUALLY Set Up Your Agent Studio (Zero Fluff)'
+      },
+      {
+        topic: 'Contrarian Brutal Purchasing Advice',
+        why: 'Competitor must preserve diplomatic corporate PR relationships.',
+        title: 'Why I Am Canceling My Order (Uncensored Honest Review)'
+      }
+    ];
+
+    function renderCompetitorGaps() {
+      const container = document.getElementById('competitor-gaps-grid');
+      container.innerHTML = sampleGaps.map((g, i) => `
+        <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-5 space-y-3">
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-bold text-slate-400">Content Gap #${i+1}</span>
+            <span class="text-emerald-400 font-bold">Very High Opportunity</span>
+          </div>
+          <h4 class="text-sm font-bold text-white">${g.topic}</h4>
+          <p class="text-xs text-slate-400">Why missed: ${g.why}</p>
+          <div class="rounded bg-slate-950 p-3 border border-slate-800 text-xs text-emerald-400 font-semibold">
+            Recommended Title: "${g.title}"
+          </div>
+          <button onclick="sendTrendToTitle('${g.title.replace(/'/g, "\\'")}')" class="px-3 py-1.5 bg-red-600 hover:bg-red-500 rounded text-xs font-bold text-white">Generate Packaging</button>
+        </div>
+      `).join('');
+    }
+
+    // 7. Calendar Schedule
+    const sampleCalendar = [
+      { day: 'Day 1 (Tuesday)', format: 'Long-form', title: 'Autonomous AI Agents: The Complete 2026 Roadmap', status: 'Ready' },
+      { day: 'Day 3 (Thursday)', format: 'Shorts', title: 'The 1 Setting You Must Turn Off Right Now', status: 'Planned' },
+      { day: 'Day 6 (Sunday)', format: 'Long-form', title: 'I Spent $50 vs $1,000 on AI Setup (Shocking Result)', status: 'Scripting' },
+      { day: 'Day 8 (Tuesday)', format: 'Shorts', title: 'Stop Believing This Viral AI Lie', status: 'Planned' },
+      { day: 'Day 11 (Friday)', format: 'Long-form', title: 'How I Built My Entire Automation System (Zero Fluff)', status: 'Planned' },
+      { day: 'Day 14 (Monday)', format: 'Shorts', title: 'The 3 Big Changes Happening Next Month', status: 'Planned' }
+    ];
+
+    function renderCalendar() {
+      const container = document.getElementById('calendar-timeline');
+      container.innerHTML = sampleCalendar.map(c => `
+        <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div>
+            <div class="flex items-center gap-2 text-xs mb-1">
+              <span class="font-mono font-bold text-red-400">${c.day}</span>
+              <span class="text-slate-600">·</span>
+              <span class="text-cyan-400 font-semibold">${c.format}</span>
+            </div>
+            <h4 class="text-sm font-bold text-white">${c.title}</h4>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-1 text-xs font-bold rounded bg-slate-800 text-slate-300 border border-slate-700">${c.status}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function exportCalendarJson() {
+      const blob = new Blob([JSON.stringify(sampleCalendar, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.download = `youtube-calendar-${Date.now()}.json`;
+      a.href = URL.createObjectURL(blob);
+      a.click();
+    }
+
+    // 8. Saved Vault (localStorage)
+    function loadSavedVault() {
+      let items = [];
+      try {
+        items = JSON.parse(localStorage.getItem('yt_growth_local_vault') || '[]');
+      } catch (e) {}
+      if (items.length === 0) {
+        items = [
+          { title: 'I Built 4 AI Agents. What Happened at 3 AM Shocked Me.', type: 'Title', date: 'Today' },
+          { title: 'DO NOT DO THIS! (2026 EDITION)', type: 'Thumbnail', date: 'Today' },
+          { title: 'SEO Package: Autonomous AI Agents in 2026', type: 'SEO', date: 'Today' },
+          { title: '15-Day Creator Publishing Roadmap', type: 'Calendar', date: 'Today' }
+        ];
+        localStorage.setItem('yt_growth_local_vault', JSON.stringify(items));
+      }
+
+      document.getElementById('overview-vault-count').innerText = items.length;
+      const container = document.getElementById('saved-vault-container');
+      container.innerHTML = items.map((item, idx) => `
+        <div class="rounded-xl border border-slate-800 bg-slate-900/70 p-4 space-y-2">
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-bold text-red-400 font-mono">${item.type}</span>
+            <span class="text-slate-500">${item.date}</span>
+          </div>
+          <h4 class="text-sm font-bold text-white">${item.title}</h4>
+        </div>
+      `).join('');
+    }
+
+    function clearSavedVault() {
+      if (confirm('Clear all saved artifacts from Chrome local storage?')) {
+        localStorage.removeItem('yt_growth_local_vault');
+        loadSavedVault();
+      }
+    }
+
+    function saveCurrentToDisk() {
+      const htmlContent = document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const a = document.createElement('a');
+      a.download = 'youtube-ai-growth-studio.html';
+      a.href = URL.createObjectURL(blob);
+      a.click();
+    }
+
+    // Initial Boots
+    window.addEventListener('DOMContentLoaded', () => {
+      renderTrends();
+      generateTitles();
+      updateCanvas();
+      generateSeoPackage();
+      renderCompetitorGaps();
+      renderCalendar();
+      loadSavedVault();
+    });
+  </script>
+</body>
+</html>
