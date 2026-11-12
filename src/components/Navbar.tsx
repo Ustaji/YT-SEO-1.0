@@ -13,7 +13,6 @@ import {
   Zap,
   PlaySquare,
   ShieldCheck,
-  Download,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -90,16 +89,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span className="font-semibold text-slate-200">{connectedHandle}</span>
           </button>
 
-          <a
-            href="/youtube-ai-growth-studio.html"
-            download="youtube-ai-growth-studio.html"
-            className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:text-white hover:bg-slate-800 transition-colors whitespace-nowrap shrink-0"
-            title="Download standalone single HTML file to use in Chrome offline"
-          >
-            <Download className="h-3.5 w-3.5 text-emerald-400" />
-            <span className="hidden md:inline">Download HTML</span>
-            <span className="md:hidden">HTML</span>
-          </a>
+
 
           <button
             onClick={onOpenPricing}
